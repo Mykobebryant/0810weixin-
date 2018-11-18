@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<script>
+  let a = 1
+  let p = new Promise((res,rej)=>{
+
+    if(a>3){
+      console.log(res('成功'));
+    }else{
+      console.log(rej('失败'));
+    }
+
+
+
+  })
+    p.then((mgs)=>{
+      console.log(mgs);
+    }
+ )
+  //    p.catch((mgs)=>{
+  //      console.log(mgs);
+  //    })
+
+
+</script>
+</body>
+</html>

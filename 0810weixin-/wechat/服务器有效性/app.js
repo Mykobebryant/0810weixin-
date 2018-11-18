@@ -2,7 +2,7 @@ const express = require('express');
 const sha1 = require('sha1');
 
 const {getUserDataAsync, parseXMLDataAsync, formatMessage} = require('./接收发送的消息utils/tools');
-
+const template = require('./reply/template');
 const app = express();
 
 const config = {
@@ -78,6 +78,13 @@ app.use(async (req, res, next) => {
      Content: '333',
      MsgId: '6624370391693488478' }
      */
+    //初始化消息配置对象
+    let options = {
+      toUserName: message.FromUserName,
+      fromUserName: message.ToUserName,
+      createTime: Date.now(),
+      msgType: 'text'
+    }
     //初始化一个消息文本
     let content = '你在说什么，我听不懂~';
 
@@ -88,17 +95,22 @@ app.use(async (req, res, next) => {
       content = '落地成盒';
     } else if (message.Content.includes('爱')) {  //半匹配
       content = '我爱你~';
+    } else if(message.Content === '3'){
+      options.msgType = 'news';
+      options.title = '微信公众号开发~';
+      options.description = '唉唉唉';
+      options.picUrl = '//www.baidu.com/img/bd_logo1.png';
+      options.url = 'http://www.baidu.com';
     }
+    options.content = content;
 
-    //返回xml消息给微信服务器
-    //微信官网提供的xml数据有问题，有多余的空格，要手动去除，不去除会报错
-    let replyMessage = `<xml>
-      <ToUserName><![CDATA[${message.FromUserName}]]></ToUserName>
-      <FromUserName><![CDATA[${message.ToUserName}]]></FromUserName>
-      <CreateTime>${Date.now()}</CreateTime>
-      <MsgType><![CDATA[text]]></MsgType>
-      <Content><![CDATA[${content}]]></Content>
-      </xml>`;
+    const replyMessage = template(options);
+    console.log(replyMessage);
+
+
+
+
+
 
     /*
      注意：微信服务器当没有接收到开发者服务器响应时，默认会请求3次开发者服务器，就会导致接口被调用多次
